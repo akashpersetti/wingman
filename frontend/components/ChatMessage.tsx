@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Message } from "@/lib/types";
 
 const EVALUATOR_PREFIX = "Evaluator Feedback on this answer:";
@@ -55,7 +56,7 @@ export default function ChatMessage({ message }: { message: Message }) {
         {ts && <span style={{ color: T.muted, fontSize: "10px" }}>{ts}</span>}
       </div>
       <div className="ai-prose" style={{ maxWidth: "78%", wordBreak: "break-word" }}>
-        <ReactMarkdown>{message.content}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
       </div>
     </div>
   );

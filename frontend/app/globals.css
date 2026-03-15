@@ -62,7 +62,7 @@ body {
 }
 .ai-prose strong { color: #E8E8E8; font-weight: 600; }
 .ai-prose hr { @apply my-3; border-color: #333; }
-.ai-prose table { @apply w-full text-xs my-2; }
+.ai-prose table { @apply w-full text-xs my-2; border-collapse: collapse; }
 .ai-prose th { @apply px-2 py-1 text-left font-bold; border-bottom: 1px solid #333; color: #4EC9B0; }
 .ai-prose td { @apply px-2 py-1; border-bottom: 1px solid #222; }
 
