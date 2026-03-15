@@ -55,6 +55,14 @@ jobs:
             --image-uri $ECR_REPOSITORY:${{ github.sha }} \
             --region ${{ env.AWS_REGION }}
 
+      - name: Wait for Lambda code update to complete
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+        run: |
+          aws lambda wait function-updated \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --region ${{ env.AWS_REGION }}
+
       - name: Inject API key secrets into Lambda environment
         env:
           LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
