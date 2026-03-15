@@ -1,0 +1,143 @@
+name: Deploy Wingman
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # required for OIDC
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  # ── Backend: build container image → ECR → update Lambda ───────────────────
+  deploy-backend:
+    name: Deploy Backend (Lambda)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC — no long-lived keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          docker build \
+            --platform linux/amd64 \
+            -t $ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REPOSITORY:latest
+
+      - name: Update Lambda function code
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+        run: |
+          aws lambda update-function-code \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --image-uri $ECR_REPOSITORY:${{ github.sha }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Inject API key secrets into Lambda environment
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+        run: |
+          # Get current env vars, merge in secrets
+          CURRENT=$(aws lambda get-function-configuration \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --query 'Environment.Variables' \
+            --output json)
+
+          # Build updated variables JSON
+          UPDATED=$(echo $CURRENT | jq \
+            --arg openai "${{ secrets.OPENAI_API_KEY }}" \
+            --arg serper "${{ secrets.SERPER_API_KEY }}" \
+            --arg pt "${{ secrets.PUSHOVER_TOKEN }}" \
+            --arg pu "${{ secrets.PUSHOVER_USER }}" \
+            '. + {OPENAI_API_KEY: $openai, SERPER_API_KEY: $serper, PUSHOVER_TOKEN: $pt, PUSHOVER_USER: $pu}')
+
+          aws lambda update-function-configuration \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --environment "{\"Variables\": $UPDATED}" \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Wait for Lambda update to complete
+        env:
+          LAMBDA_FUNCTION_NAME: ${{ secrets.LAMBDA_FUNCTION_NAME }}
+        run: |
+          aws lambda wait function-updated \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --region ${{ env.AWS_REGION }}
+
+  # ── Frontend: Next.js static export → S3 → CloudFront invalidation ─────────
+  deploy-frontend:
+    name: Deploy Frontend (S3 + CloudFront)
+    runs-on: ubuntu-latest
+    needs: deploy-backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build Next.js static export
+        # Empty NEXT_PUBLIC_API_URL → relative /api/* paths → CloudFront proxies to Lambda
+        run: cd frontend && NEXT_PUBLIC_API_URL="" npm run build
+
+      - name: Sync static assets to S3 (long cache)
+        run: |
+          aws s3 sync frontend/out/ s3://${{ secrets.S3_BUCKET }}/ \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "*.html"
+
+      - name: Sync HTML files to S3 (no cache — instant redeploys)
+        run: |
+          aws s3 sync frontend/out/ s3://${{ secrets.S3_BUCKET }}/ \
+            --exclude "*" \
+            --include "*.html" \
+            --cache-control "no-cache"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Print app URL
+        run: |
+          echo "App deployed to: https://$(aws cloudfront get-distribution \
+            --id ${{ secrets.CF_DISTRIBUTION_ID }} \
+            --query 'Distribution.DomainName' --output text)"

@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #1A1A1A;
+  color: #E8E8E8;
+  font-family: 'Menlo', 'Monaco', 'Courier New', Courier, monospace;
+  font-size: 13px;
+  @apply antialiased;
+}
+
+/* ─── Block cursor (non-blinking) ─────────────────── */
+.block-cursor-overlay {
+  pointer-events: none;
+  position: absolute;
+  width: 8px;
+  height: 1.1em;
+  background: #E8E8E8;
+  opacity: 0.9;
+  mix-blend-mode: difference;
+}
+
+/* ─── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #111111; }
+::-webkit-scrollbar-thumb { background: #333333; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #555555; }
+
+/* ─── AI prose ────────────────────────────────────── */
+.ai-prose { font-size: 0.8125rem; line-height: 1.65; color: #E8E8E8; }
+.ai-prose p { margin-bottom: 0.45rem; }
+.ai-prose p:last-child { margin-bottom: 0; }
+.ai-prose pre {
+  @apply p-3 text-xs overflow-x-auto my-2;
+  background: #111111;
+  border: 1px solid #333333;
+  color: #E8E8E8;
+}
+.ai-prose code:not(pre code) {
+  @apply px-1 text-xs font-mono;
+  background: #111111;
+  color: #CE9178;
+  border: 1px solid #333333;
+}
+.ai-prose ul { @apply list-none pl-4 my-1 space-y-0.5; }
+.ai-prose ul li::before { content: "- "; color: #666; }
+.ai-prose ol { @apply list-none pl-4 my-1 space-y-0.5; counter-reset: li; }
+.ai-prose ol li { counter-increment: li; }
+.ai-prose ol li::before { content: counter(li) ". "; color: #666; }
+.ai-prose li { font-size: 0.8125rem; }
+.ai-prose h1 { @apply text-sm font-bold mb-2 mt-3 first:mt-0; color: #4EC9B0; }
+.ai-prose h2 { @apply text-sm font-bold mb-1.5 mt-2 first:mt-0; color: #4EC9B0; }
+.ai-prose h3 { @apply text-xs font-semibold mb-1 mt-2 first:mt-0; color: #4EC9B0; }
+.ai-prose a { color: #5B9BD5; text-decoration: underline; }
+.ai-prose blockquote {
+  @apply border-l-2 pl-3 my-2 italic;
+  border-color: #444;
+  color: #9E9E9E;
+}
+.ai-prose strong { color: #E8E8E8; font-weight: 600; }
+.ai-prose hr { @apply my-3; border-color: #333; }
+.ai-prose table { @apply w-full text-xs my-2; }
+.ai-prose th { @apply px-2 py-1 text-left font-bold; border-bottom: 1px solid #333; color: #4EC9B0; }
+.ai-prose td { @apply px-2 py-1; border-bottom: 1px solid #222; }
+
+/* ─── Command palette backdrop ───────────────────── */
+.cmd-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -1,0 +1,44 @@
+version: "3.8"
+
+# Local development — simulates the Lambda + DynamoDB stack locally.
+# DynamoDB Local replaces the real AWS DynamoDB (no AWS account needed for dev).
+
+services:
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    ports:
+      - "8001:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+
+  backend:
+    build: .
+    # Override the Lambda CMD with uvicorn for local dev
+    entrypoint: ["uv", "run", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DYNAMODB_TABLE=wingman-sessions
+      - AWS_DEFAULT_REGION=us-east-1
+      # Override DynamoDB endpoint to use local container
+      - AWS_ENDPOINT_URL=http://dynamodb-local:8001
+      # Dummy credentials for local DynamoDB (not real AWS)
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
+    volumes:
+      - ./backend:/app/backend  # hot reload
+      - ./sandbox:/app/sandbox
+    depends_on:
+      - dynamodb-local
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000

@@ -1,0 +1,38 @@
+# Secrets — never commit
+.env
+*.env.local
+frontend/.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# LangGraph / SQLite state
+memory.db
+*.db
+*.db-shm
+*.db-wal
+
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+
+# Terraform state (keep .tf files, never state/vars with secrets)
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfvars
+terraform/terraform.tfvars
+
+# OS
+.DS_Store
+.gradio/
+
+# Build artifacts
+dist/
+build/
