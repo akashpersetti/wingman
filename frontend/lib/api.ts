@@ -34,6 +34,14 @@ export async function sendMessage(
   return data.history;
 }
 
+export async function loadSession(sessionId: string): Promise<Message[]> {
+  const res = await fetch(`${API_BASE}/api/history/${sessionId}`);
+  if (res.status === 404) throw new SessionExpiredError("Session not found");
+  if (!res.ok) throw new Error("Failed to load session");
+  const data = await res.json();
+  return data.history;
+}
+
 export async function resetSession(sessionId: string): Promise<string> {
   const res = await fetch(`${API_BASE}/api/reset`, {
     method: "POST",

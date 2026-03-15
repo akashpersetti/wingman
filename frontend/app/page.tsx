@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { initSession, sendMessage, resetSession, SessionExpiredError } from "@/lib/api";
+import { initSession, sendMessage, resetSession, loadSession, SessionExpiredError } from "@/lib/api";
 import { Message } from "@/lib/types";
 import { T, MONO, SPIN, EVALUATOR_PREFIX, nowHMS } from "@/lib/theme";
 import AppHeader        from "@/components/AppHeader";
@@ -126,11 +126,20 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function handleLoadSession() {
+  async function handleLoadSession() {
     const id = loadInput.trim();
     if (!id) return;
-    setSessionId(id); setHistory([]);
-    setLoadInput(""); setShowLoadSession(false);
+    setIsLoading(true); setError(null);
+    try {
+      const history = await loadSession(id);
+      setSessionId(id);
+      setHistory(history.map(m => m.timestamp ? m : { ...m, timestamp: nowHMS() }));
+      setLoadInput(""); setShowLoadSession(false);
+    } catch {
+      setError("error: session not found — check the session id and try again");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   /* ── Command palette ──────────────────────────────── */

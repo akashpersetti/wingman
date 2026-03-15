@@ -108,6 +108,12 @@ async def reset(request: ResetRequest):
     return {"session_id": new_id}
 
 
+@app.get("/api/history/{session_id}", response_model=ChatResponse)
+async def get_history(session_id: str):
+    history = _get_session(session_id)
+    return {"history": history}
+
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok"}
