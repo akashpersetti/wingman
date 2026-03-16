@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Check, LogIn } from "lucide-react";
+import { Copy, Check, LogIn, Code2 } from "lucide-react";
 import { T, MONO, SPIN } from "@/lib/theme";
 
 interface Props {
@@ -44,6 +44,16 @@ export default function AppHeader({
 
       {/* Right */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <a
+          href="https://github.com/akashpersetti/wingman"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ ...MONO, display: "flex", alignItems: "center", gap: 5, border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", textDecoration: "none" }}
+          title="View source on GitHub"
+        >
+          <Code2 size={11} /> source
+        </a>
+
         <button
           onClick={onOpenPalette}
           style={{ ...MONO, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
