@@ -48,12 +48,13 @@ export default function Home() {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
+        if (showLoadSession) return;
         setShowPalette(p => !p);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [showLoadSession]);
 
   /* ── Handlers ─────────────────────────────────────── */
   async function initialize() {

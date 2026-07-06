@@ -168,3 +168,16 @@ test("removes the unused terminal spinner from shared UI source", async () => {
 
   assert.doesNotMatch(source, /\bSPIN\b|⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏/);
 });
+
+test("blocks the command shortcut while the load-session dialog is open", async () => {
+  const page = await read("app/page.tsx");
+
+  assert.match(
+    page,
+    /if\s*\(\(e\.metaKey\s*\|\|\s*e\.ctrlKey\)\s*&&\s*e\.key\s*===\s*"k"\)\s*\{\s*e\.preventDefault\(\);\s*if\s*\(showLoadSession\)\s*return;\s*setShowPalette\(p\s*=>\s*!p\);/s,
+  );
+  assert.match(
+    page,
+    /window\.addEventListener\("keydown",\s*onKey\);[\s\S]*?window\.removeEventListener\("keydown",\s*onKey\);\s*\},\s*\[showLoadSession\]\);/,
+  );
+});
