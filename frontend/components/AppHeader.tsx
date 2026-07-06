@@ -1,7 +1,7 @@
 "use client";
 
 import { Copy, Check, LogIn, Code2 } from "lucide-react";
-import { T, MONO, SPIN } from "@/lib/theme";
+import { T, UI_FONT, SPIN } from "@/lib/theme";
 
 interface Props {
   sessionId:      string | null;
@@ -48,7 +48,7 @@ export default function AppHeader({
           href="https://github.com/akashpersetti/wingman"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ ...MONO, display: "flex", alignItems: "center", gap: 5, border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", textDecoration: "none" }}
+          style={{ ...UI_FONT, display: "flex", alignItems: "center", gap: 5, border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", textDecoration: "none" }}
           title="View source on GitHub"
         >
           <Code2 size={11} /> source
@@ -56,7 +56,7 @@ export default function AppHeader({
 
         <button
           onClick={onOpenPalette}
-          style={{ ...MONO, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
+          style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
           title="Open command palette (⌘K)"
         >
           <span>⌘K</span>
@@ -65,7 +65,7 @@ export default function AppHeader({
 
         <button
           onClick={onLoadSession}
-          style={{ ...MONO, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
+          style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
         >
           <LogIn size={11} /> load session
         </button>

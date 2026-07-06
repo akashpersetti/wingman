@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { RotateCcw, ChevronDown } from "lucide-react";
 import ChatMessage from "@/components/ChatMessage";
-import BlockCursorTextarea from "@/components/BlockCursorTextarea";
-import { T, MONO, SPIN } from "@/lib/theme";
+import AppTextarea from "@/components/AppTextarea";
+import { T, UI_FONT, SPIN } from "@/lib/theme";
 import { Message } from "@/lib/types";
 
 interface Props {
@@ -95,7 +95,7 @@ export default function ChatPanel({
           <button
             onClick={() => setShowCriteria(c => !c)}
             disabled={inputDisabled}
-            style={{ ...MONO, background: "transparent", border: "none", color: showCriteria ? T.blue : T.dim, fontSize: "11px", padding: "6px 18px", display: "flex", alignItems: "center", gap: 6, width: "100%", opacity: inputDisabled ? 0.4 : 1 }}
+            style={{ ...UI_FONT, background: "transparent", border: "none", color: showCriteria ? T.blue : T.dim, fontSize: "11px", padding: "6px 18px", display: "flex", alignItems: "center", gap: 6, width: "100%", opacity: inputDisabled ? 0.4 : 1 }}
           >
             <ChevronDown size={11} style={{ transform: showCriteria ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} />
             success criteria
@@ -104,14 +104,14 @@ export default function ChatPanel({
 
           {showCriteria && (
             <div style={{ display: "flex", gap: 8, padding: "4px 18px 8px", alignItems: "flex-start" }}>
-              <span style={{ color: T.dim, fontSize: "12px", paddingTop: 2, flexShrink: 0 }}>#</span>
-              <BlockCursorTextarea
+              <AppTextarea
                 ref={criteriaRef}
                 value={successCriteria}
                 onChange={e => setSuccessCriteria(e.target.value)}
                 placeholder="describe what success looks like..."
                 rows={2}
                 disabled={inputDisabled}
+                ariaLabel="Success criteria"
                 style={{ color: T.yellow }}
               />
             </div>
@@ -120,8 +120,7 @@ export default function ChatPanel({
 
         {/* Prompt row */}
         <div style={{ padding: "10px 18px", display: "flex", alignItems: "flex-start", gap: 10 }}>
-          <span style={{ color: T.blue, fontSize: "14px", paddingTop: 1, flexShrink: 0, fontWeight: "bold" }}>❯</span>
-          <BlockCursorTextarea
+          <AppTextarea
             ref={inputRef}
             value={message}
             onChange={e => setMessage(e.target.value)}
@@ -129,20 +128,21 @@ export default function ChatPanel({
             placeholder="type a message...  (shift+enter for newline)"
             rows={2}
             disabled={inputDisabled}
+            ariaLabel="Message"
             style={{ color: T.text }}
           />
           <div style={{ display: "flex", gap: 8, flexShrink: 0, paddingTop: 1 }}>
             <button
               onClick={onReset}
               disabled={inputDisabled}
-              style={{ ...MONO, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "4px 10px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5, opacity: inputDisabled ? 0.4 : 1 }}
+              style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "4px 10px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5, opacity: inputDisabled ? 0.4 : 1 }}
             >
               <RotateCcw size={10} /> reset
             </button>
             <button
               onClick={onSend}
               disabled={sendDisabled}
-              style={{ ...MONO, background: "transparent", border: `1px solid ${sendDisabled ? T.border : T.blue}`, color: sendDisabled ? T.muted : T.blue, padding: "4px 14px", fontSize: "11px", opacity: sendDisabled ? 0.4 : 1 }}
+              style={{ ...UI_FONT, background: "transparent", border: `1px solid ${sendDisabled ? T.border : T.blue}`, color: sendDisabled ? T.muted : T.blue, padding: "4px 14px", fontSize: "11px", opacity: sendDisabled ? 0.4 : 1 }}
             >
               {isLoading ? `${SPIN[spinIdx]} working` : "send  [↵]"}
             </button>

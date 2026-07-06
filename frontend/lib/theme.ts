@@ -1,22 +1,27 @@
 import React from "react";
 
 export const T = {
-  bg:      "#1A1A1A",
-  panel:   "#141414",
-  surface: "#1E1E1E",
-  border:  "#2D2D2D",
-  text:    "#E8E8E8",
-  muted:   "#666666",
-  dim:     "#444444",
-  blue:    "#5B9BD5",
-  teal:    "#4EC9B0",
-  yellow:  "#DCDCAA",
-  red:     "#E74C3C",
-  orange:  "#CE9178",
+  bg: "#ffffff",
+  panel: "#f7fafa",
+  surface: "#ffffff",
+  surfaceTint: "#ccfbf1",
+  border: "#e2e8f0",
+  text: "#0f172a",
+  muted: "#475569",
+  dim: "#64748b",
+  accent: "#0d9488",
+  accentHover: "#0f766e",
+  accentSoft: "#5eead4",
+  accentWash: "#0d948814",
+  blue: "#0d9488",
+  teal: "#0d9488",
+  yellow: "#0f766e",
+  red: "#be123c",
+  orange: "#d97706",
 } as const;
 
-export const MONO: React.CSSProperties = {
-  fontFamily: "'Menlo','Monaco','Courier New',monospace",
+export const UI_FONT: React.CSSProperties = {
+  fontFamily: 'var(--font-inter), "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif',
 };
 
 export const SPIN = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];

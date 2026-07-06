@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { T, MONO } from "@/lib/theme";
+import { T, UI_FONT } from "@/lib/theme";
 
 interface Props {
   open:       boolean;
@@ -24,7 +24,7 @@ export default function LoadSessionModal({ open, loadInput, setLoadInput, onClos
           <motion.div
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.12 }}
-            style={{ position: "fixed", top: "20%", left: "50%", transform: "translateX(-50%)", zIndex: 50, width: 460, background: T.surface, border: `1px solid ${T.border}`, padding: 22, ...MONO }}
+            style={{ position: "fixed", top: "20%", left: "50%", transform: "translateX(-50%)", zIndex: 50, width: 460, background: T.surface, border: `1px solid ${T.border}`, padding: 22, ...UI_FONT }}
           >
             <div style={{ color: T.text, fontSize: "13px", marginBottom: 4 }}>$ load session</div>
             <div style={{ color: T.muted, fontSize: "11px", marginBottom: 14 }}>
@@ -36,19 +36,19 @@ export default function LoadSessionModal({ open, loadInput, setLoadInput, onClos
               onChange={e => setLoadInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && onConnect()}
               placeholder="session id..."
-              style={{ ...MONO, width: "100%", background: T.bg, border: `1px solid ${T.border}`, color: T.text, padding: "8px 10px", fontSize: "12px", outline: "none", boxSizing: "border-box", caretColor: T.blue }}
+              style={{ ...UI_FONT, width: "100%", background: T.bg, border: `1px solid ${T.border}`, color: T.text, padding: "8px 10px", fontSize: "12px", outline: "none", boxSizing: "border-box", caretColor: T.blue }}
             />
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
               <button
                 onClick={onClose}
-                style={{ ...MONO, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "5px 14px", fontSize: "12px" }}
+                style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "5px 14px", fontSize: "12px" }}
               >
                 cancel
               </button>
               <button
                 onClick={onConnect}
                 disabled={!loadInput.trim()}
-                style={{ ...MONO, background: "transparent", border: `1px solid ${T.blue}`, color: T.blue, padding: "5px 14px", fontSize: "12px", opacity: loadInput.trim() ? 1 : 0.4 }}
+                style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.blue}`, color: T.blue, padding: "5px 14px", fontSize: "12px", opacity: loadInput.trim() ? 1 : 0.4 }}
               >
                 connect
               </button>

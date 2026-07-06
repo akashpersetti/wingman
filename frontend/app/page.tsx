@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { initSession, sendMessage, resetSession, loadSession, SessionExpiredError } from "@/lib/api";
 import { Message } from "@/lib/types";
-import { T, MONO, SPIN, EVALUATOR_PREFIX, nowHMS } from "@/lib/theme";
+import { T, UI_FONT, SPIN, EVALUATOR_PREFIX, nowHMS } from "@/lib/theme";
 import AppHeader        from "@/components/AppHeader";
 import AgentPanel       from "@/components/AgentPanel";
 import ChatPanel        from "@/components/ChatPanel";
@@ -187,7 +187,7 @@ export default function Home() {
       {!splashDone && <SplashScreen onComplete={() => setSplashDone(true)} />}
       {showPalette && <CommandPalette commands={commands} onClose={() => setShowPalette(false)} />}
 
-      <div style={{ ...MONO, background: T.bg, color: T.text, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden", fontSize: "13px" }}>
+      <div style={{ ...UI_FONT, background: T.bg, color: T.text, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden", fontSize: "13px" }}>
 
         <AppHeader
           sessionId={sessionId}
