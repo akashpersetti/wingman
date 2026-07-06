@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { initSession, sendMessage, resetSession, loadSession, SessionExpiredError } from "@/lib/api";
 import { Message } from "@/lib/types";
-import { T, UI_FONT, SPIN, EVALUATOR_PREFIX, nowHMS } from "@/lib/theme";
+import { UI_FONT, EVALUATOR_PREFIX, nowHMS } from "@/lib/theme";
 import AppHeader        from "@/components/AppHeader";
 import AgentPanel       from "@/components/AgentPanel";
 import ChatPanel        from "@/components/ChatPanel";
@@ -24,7 +24,6 @@ export default function Home() {
   const [copied, setCopied]                     = useState(false);
   const [showLoadSession, setShowLoadSession]   = useState(false);
   const [loadInput, setLoadInput]               = useState("");
-  const [spinIdx, setSpinIdx]                   = useState(0);
   const [showPalette, setShowPalette]           = useState(false);
 
   const mainEndRef    = useRef<HTMLDivElement>(null);
@@ -43,13 +42,6 @@ export default function Home() {
   }, [history, isLoading]);
 
   useEffect(() => { initialize(); }, []);
-
-  /* Spinner */
-  useEffect(() => {
-    if (!isLoading) return;
-    const id = setInterval(() => setSpinIdx(i => (i + 1) % SPIN.length), 80);
-    return () => clearInterval(id);
-  }, [isLoading]);
 
   /* ⌘K / Ctrl+K */
   useEffect(() => {
@@ -187,19 +179,17 @@ export default function Home() {
       {!splashDone && <SplashScreen onComplete={() => setSplashDone(true)} />}
       {showPalette && <CommandPalette commands={commands} onClose={() => setShowPalette(false)} />}
 
-      <div style={{ ...UI_FONT, background: T.bg, color: T.text, height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden", fontSize: "13px" }}>
-
+      <div className="app-shell" style={UI_FONT}>
         <AppHeader
           sessionId={sessionId}
           isLoading={isLoading}
-          spinIdx={spinIdx}
           copied={copied}
           onCopySession={handleCopySession}
           onOpenPalette={() => setShowPalette(true)}
           onLoadSession={() => setShowLoadSession(true)}
         />
 
-        <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
+        <div className="workspace">
           <AgentPanel
             isLoading={isLoading}
             evalMessages={evalMessages}
@@ -209,7 +199,6 @@ export default function Home() {
             isInitializing={isInitializing}
             isLoading={isLoading}
             error={error}
-            spinIdx={spinIdx}
             mainMessages={mainMessages}
             message={message}
             setMessage={setMessage}

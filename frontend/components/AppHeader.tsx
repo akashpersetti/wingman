@@ -1,12 +1,12 @@
 "use client";
 
-import { Copy, Check, LogIn, Code2 } from "lucide-react";
-import { T, UI_FONT, SPIN } from "@/lib/theme";
+import type { CSSProperties } from "react";
+import { Copy, Check, LogIn, Code2, LoaderCircle } from "lucide-react";
+import { T, UI_FONT } from "@/lib/theme";
 
 interface Props {
   sessionId:      string | null;
   isLoading:      boolean;
-  spinIdx:        number;
   copied:         boolean;
   onCopySession:  () => void;
   onOpenPalette:  () => void;
@@ -14,72 +14,81 @@ interface Props {
 }
 
 export default function AppHeader({
-  sessionId, isLoading, spinIdx, copied,
+  sessionId, isLoading, copied,
   onCopySession, onOpenPalette, onLoadSession,
 }: Props) {
+  const actionStyle: CSSProperties = {
+    ...UI_FONT,
+    display: "flex",
+    alignItems: "center",
+    gap: 7,
+    background: T.surface,
+    border: `1px solid ${T.border}`,
+    borderRadius: 8,
+    color: T.text,
+    padding: "8px 12px",
+    fontSize: 13,
+    lineHeight: 1,
+    textDecoration: "none",
+  };
+
   return (
-    <header style={{
-      background: T.panel,
-      borderBottom: `1px solid ${T.border}`,
-      padding: "9px 18px",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      flexShrink: 0, zIndex: 20,
-    }}>
-      {/* Left */}
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <span
+    <header className="app-header">
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <button
           onClick={() => window.location.reload()}
-          style={{ color: T.text, fontWeight: "bold", letterSpacing: "0.2em", fontSize: "13px", cursor: "pointer" }}
+          style={{ ...UI_FONT, border: 0, background: "transparent", color: T.text, fontWeight: 700, fontSize: 18, padding: 0 }}
+          aria-label="Reload Wingman"
         >
-          WINGMAN
-        </span>
-        <span style={{ color: T.border }}>│</span>
-        <span style={{ color: T.muted, fontSize: "11px" }}>personal co-worker</span>
+          Wingman
+        </button>
+        <span style={{ color: T.muted, fontSize: 13 }}>Personal co-worker</span>
         {isLoading && (
-          <span style={{ color: T.teal, fontSize: "11px" }}>
-            {SPIN[spinIdx]} processing
+          <span style={{ color: T.accentHover, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}>
+            <LoaderCircle className="app-spinner" size={15} aria-hidden="true" />
+            Processing
           </span>
         )}
       </div>
 
-      {/* Right */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, flexWrap: "wrap" }}>
         <a
           href="https://github.com/akashpersetti/wingman"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ ...UI_FONT, display: "flex", alignItems: "center", gap: 5, border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", textDecoration: "none" }}
+          style={actionStyle}
           title="View source on GitHub"
         >
-          <Code2 size={11} /> source
+          <Code2 size={15} aria-hidden="true" /> Source
         </a>
 
         <button
           onClick={onOpenPalette}
-          style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
+          style={actionStyle}
           title="Open command palette (⌘K)"
         >
-          <span>⌘K</span>
-          <span style={{ color: T.dim }}>commands</span>
+          Commands
+          <span style={{ color: T.muted, fontSize: 11 }}>⌘K</span>
         </button>
 
         <button
           onClick={onLoadSession}
-          style={{ ...UI_FONT, background: "transparent", border: `1px solid ${T.border}`, color: T.muted, padding: "3px 9px", fontSize: "11px", display: "flex", alignItems: "center", gap: 5 }}
+          style={actionStyle}
         >
-          <LogIn size={11} /> load session
+          <LogIn size={15} aria-hidden="true" /> Load session
         </button>
 
         {sessionId && (
-          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid ${T.border}`, padding: "3px 9px", fontSize: "11px", color: T.muted }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid ${T.accentSoft}`, borderRadius: 999, background: T.accentWash, padding: "7px 10px", fontSize: 12, color: T.text }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: isLoading ? T.orange : T.teal, display: "inline-block", flexShrink: 0 }} />
-            <span style={{ color: T.dim }}>session:</span>
-            <span style={{ color: T.muted }}>{sessionId}</span>
+            <span style={{ color: T.muted }}>Session</span>
+            <span>{sessionId}</span>
             <button
               onClick={onCopySession}
-              style={{ background: "transparent", border: "none", color: copied ? T.teal : T.dim, padding: 0, display: "flex" }}
+              style={{ background: "transparent", border: "none", color: copied ? T.accentHover : T.muted, padding: 2, display: "flex" }}
+              aria-label={copied ? "Session ID copied" : "Copy session ID"}
             >
-              {copied ? <Check size={11} /> : <Copy size={11} />}
+              {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
             </button>
           </div>
         )}

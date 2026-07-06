@@ -38,3 +38,25 @@ test("uses a native forwarded textarea without cursor emulation", async () => {
   assert.match(chat, /AppTextarea/);
   assert.doesNotMatch(`${textarea}\n${chat}\n${css}`, /BlockCursor|block-cursor|caretColor:\s*["']transparent|mirrorRef|updateCursor/);
 });
+
+test("removes terminal chrome from the page, header, chat, and session modal", async () => {
+  const source = (await Promise.all([
+    read("app/page.tsx"),
+    read("components/AppHeader.tsx"),
+    read("components/ChatMessage.tsx"),
+    read("components/ChatPanel.tsx"),
+    read("components/LoadSessionModal.tsx"),
+  ])).join("\n");
+
+  assert.doesNotMatch(source, /\bMONO\b|\bSPIN\b|Menlo|Monaco|Courier|\$ wingman|you ❯|send  \[↵\]|\$ load session/);
+  assert.match(source, /className="workspace"/);
+  assert.match(source, /className="chat-panel"/);
+  assert.match(source, /UI_FONT/);
+});
+
+test("defines responsive desktop and narrow-screen workspace behavior", async () => {
+  const css = await read("app/globals.css");
+  assert.match(css, /\.workspace\s*\{/);
+  assert.match(css, /@media\s*\(max-width:\s*900px\)/);
+  assert.match(css, /flex-direction:\s*column/);
+});
