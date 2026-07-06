@@ -1,0 +1,47 @@
+# Local agent context
+AGENTS.md
+.superpowers/
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Logs and editor files
+*.log
+.idea/
+.vscode/
+*.swp
+*~
+
+# Terraform local state and generated files (keep .terraform.lock.hcl trackable)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
