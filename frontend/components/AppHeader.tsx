@@ -1,8 +1,7 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import { Copy, Check, LogIn, Code2, LoaderCircle } from "lucide-react";
-import { T, UI_FONT } from "@/lib/theme";
+import { T } from "@/lib/theme";
 
 interface Props {
   sessionId:      string | null;
@@ -17,27 +16,12 @@ export default function AppHeader({
   sessionId, isLoading, copied,
   onCopySession, onOpenPalette, onLoadSession,
 }: Props) {
-  const actionStyle: CSSProperties = {
-    ...UI_FONT,
-    display: "flex",
-    alignItems: "center",
-    gap: 7,
-    background: T.surface,
-    border: `1px solid ${T.border}`,
-    borderRadius: 8,
-    color: T.text,
-    padding: "8px 12px",
-    fontSize: 13,
-    lineHeight: 1,
-    textDecoration: "none",
-  };
-
   return (
     <header className="app-header">
       <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <button
           onClick={() => window.location.reload()}
-          style={{ ...UI_FONT, border: 0, background: "transparent", color: T.text, fontWeight: 700, fontSize: 18, padding: 0 }}
+          className="control control--brand"
           aria-label="Reload Wingman"
         >
           Wingman
@@ -51,12 +35,12 @@ export default function AppHeader({
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, flexWrap: "wrap" }}>
+      <div className="app-header__actions">
         <a
           href="https://github.com/akashpersetti/wingman"
           target="_blank"
           rel="noopener noreferrer"
-          style={actionStyle}
+          className="control control--neutral"
           title="View source on GitHub"
         >
           <Code2 size={15} aria-hidden="true" /> Source
@@ -64,7 +48,7 @@ export default function AppHeader({
 
         <button
           onClick={onOpenPalette}
-          style={actionStyle}
+          className="control control--neutral"
           title="Open command palette (⌘K)"
         >
           Commands
@@ -73,19 +57,20 @@ export default function AppHeader({
 
         <button
           onClick={onLoadSession}
-          style={actionStyle}
+          className="control control--neutral"
         >
           <LogIn size={15} aria-hidden="true" /> Load session
         </button>
 
         {sessionId && (
-          <div style={{ display: "flex", alignItems: "center", gap: 7, border: `1px solid ${T.accentSoft}`, borderRadius: 999, background: T.accentWash, padding: "7px 10px", fontSize: 12, color: T.text }}>
+          <div className="session-pill">
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: isLoading ? T.orange : T.teal, display: "inline-block", flexShrink: 0 }} />
-            <span style={{ color: T.muted }}>Session</span>
-            <span>{sessionId}</span>
+            <span className="session-pill__label">Session</span>
+            <span className="session-pill__id">{sessionId}</span>
             <button
               onClick={onCopySession}
-              style={{ background: "transparent", border: "none", color: copied ? T.accentHover : T.muted, padding: 2, display: "flex" }}
+              className="control control--ghost control--icon"
+              style={{ color: copied ? T.accentHover : T.muted }}
               aria-label={copied ? "Session ID copied" : "Copy session ID"}
             >
               {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}

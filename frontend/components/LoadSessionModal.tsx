@@ -2,7 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useRef } from "react";
 import { T, UI_FONT } from "@/lib/theme";
+import { useDialogFocus } from "@/lib/useDialogFocus";
 
 interface Props {
   open:       boolean;
@@ -13,6 +15,13 @@ interface Props {
 }
 
 export default function LoadSessionModal({ open, loadInput, setLoadInput, onClose, onConnect }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { dialogRef } = useDialogFocus<HTMLDivElement>({
+    open,
+    onClose,
+    initialFocusRef: inputRef,
+  });
+
   return (
     <AnimatePresence>
       {open && (
@@ -23,17 +32,20 @@ export default function LoadSessionModal({ open, loadInput, setLoadInput, onClos
             onClick={onClose}
           />
           <motion.div
+            ref={dialogRef}
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.12 }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="load-session-title"
+            tabIndex={-1}
             style={{ position: "fixed", top: "20%", left: "50%", transform: "translateX(-50%)", zIndex: 50, width: "min(460px, calc(100vw - 32px))", boxSizing: "border-box", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12, boxShadow: "0 24px 60px rgba(15, 23, 42, 0.2)", padding: 24, ...UI_FONT }}
           >
             <button
               onClick={onClose}
               aria-label="Close load session dialog"
-              style={{ position: "absolute", top: 14, right: 14, display: "flex", background: "transparent", border: 0, color: T.muted, padding: 4 }}
+              className="control control--ghost control--icon"
+              style={{ position: "absolute", top: 14, right: 14 }}
             >
               <X size={18} aria-hidden="true" />
             </button>
@@ -42,7 +54,7 @@ export default function LoadSessionModal({ open, loadInput, setLoadInput, onClos
               Paste a session ID to reconnect to an existing conversation.
             </p>
             <input
-              autoFocus
+              ref={inputRef}
               value={loadInput}
               onChange={e => setLoadInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && onConnect()}
@@ -53,14 +65,16 @@ export default function LoadSessionModal({ open, loadInput, setLoadInput, onClos
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 18 }}>
               <button
                 onClick={onClose}
-                style={{ ...UI_FONT, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text, padding: "8px 14px", fontSize: 13 }}
+                className="control control--neutral"
+                style={{ ...UI_FONT, padding: "8px 14px", fontSize: 13 }}
               >
                 Cancel
               </button>
               <button
                 onClick={onConnect}
                 disabled={!loadInput.trim()}
-                style={{ ...UI_FONT, background: T.accent, border: `1px solid ${T.accent}`, borderRadius: 8, color: T.surface, padding: "8px 14px", fontSize: 13, fontWeight: 600, opacity: loadInput.trim() ? 1 : 0.5 }}
+                className="control control--primary"
+                style={{ ...UI_FONT, padding: "8px 14px", fontSize: 13, fontWeight: 600 }}
               >
                 Connect
               </button>

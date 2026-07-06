@@ -16,6 +16,7 @@
   --border: #e2e8f0;
 }
 
+*, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
   margin: 0;
@@ -41,10 +42,95 @@ button:disabled { cursor: not-allowed; }
 
 .app-shell { height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-base); color: var(--text-primary); }
 .app-header { min-height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 10px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border); z-index: 20; }
+.app-header__actions { max-width: 100%; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .workspace { flex: 1; min-height: 0; display: flex; overflow: hidden; }
 .agent-panel, .chat-panel { width: 50%; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
 .agent-panel { border-right: 1px solid var(--border); }
 .app-spinner { animation: app-spin 0.9s linear infinite; }
+
+.control {
+  border-radius: 8px;
+  font: inherit;
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, color 120ms ease;
+}
+.control--neutral {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1;
+}
+.control--neutral:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: var(--bg-alt);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+.control--primary {
+  border: 1px solid var(--accent-hover);
+  background: var(--accent-hover);
+  color: #ffffff;
+}
+.control--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: 0 0 0 3px var(--accent-wash), 0 3px 10px rgba(15, 118, 110, 0.22);
+  filter: brightness(0.94);
+}
+.control--primary:disabled {
+  border-color: var(--accent-soft);
+  background: var(--accent-soft);
+  color: var(--text-secondary);
+  opacity: 0.55;
+}
+.control--ghost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.control--ghost:hover:not(:disabled),
+.control--brand:hover:not(:disabled) {
+  background: var(--accent-wash);
+  color: var(--accent-hover);
+}
+.control--brand {
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  padding: 2px 4px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.control--icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.session-pill {
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  background: var(--accent-wash);
+  padding: 7px 10px;
+  color: var(--text-primary);
+  font-size: 12px;
+}
+.session-pill__label { flex-shrink: 0; color: var(--text-secondary); }
+.session-pill__id {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 @keyframes app-spin {
   to { transform: rotate(360deg); }
@@ -56,6 +142,7 @@ button:disabled { cursor: not-allowed; }
   .agent-panel, .chat-panel { width: 100%; min-height: 70vh; }
   .agent-panel { border-right: 0; border-bottom: 1px solid var(--border); }
   .app-header { align-items: flex-start; }
+  .app-header__actions { justify-content: flex-start; }
 }
 
 .ai-prose { max-width: 100%; color: var(--text-primary); font-size: 0.875rem; line-height: 1.65; }
@@ -96,6 +183,22 @@ button:disabled { cursor: not-allowed; }
 .ai-prose th, .ai-prose td { border-bottom: 1px solid var(--border); padding: 0.45rem 0.6rem; text-align: left; }
 .ai-prose th { color: var(--accent-hover); font-weight: 700; }
 .cmd-backdrop { position: fixed; inset: 0; z-index: 60; background: rgba(15, 23, 42, 0.32); backdrop-filter: blur(4px); }
+.command-option {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 80ms ease, border-color 80ms ease;
+}
+.command-option:hover {
+  border-color: var(--accent-soft);
+  background: var(--bg-alt);
+}
+.command-option--selected,
+.command-option--selected:hover {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
 
 .agent-graph {
   width: 100%;

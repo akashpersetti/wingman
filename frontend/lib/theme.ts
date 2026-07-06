@@ -24,8 +24,6 @@ export const UI_FONT: React.CSSProperties = {
   fontFamily: 'var(--font-inter), "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif',
 };
 
-export const SPIN = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"];
-
 export const EVALUATOR_PREFIX = "Evaluator Feedback on this answer:";
 
 export function nowHMS(): string {

@@ -30,7 +30,6 @@ const AppTextarea = forwardRef<HTMLTextAreaElement, Props>(
         padding: 0,
         margin: 0,
         border: 0,
-        outline: 0,
         resize: "none",
         background: "transparent",
         color: disabled ? "#94a3b8" : "#0f172a",

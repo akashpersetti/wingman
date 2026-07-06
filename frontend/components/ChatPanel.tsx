@@ -95,7 +95,8 @@ export default function ChatPanel({
           <button
             onClick={() => setShowCriteria(c => !c)}
             disabled={inputDisabled}
-            style={{ ...UI_FONT, background: "transparent", border: "none", color: showCriteria ? T.accentHover : T.muted, fontSize: 13, padding: "9px 18px", display: "flex", alignItems: "center", gap: 7, width: "100%", opacity: inputDisabled ? 0.5 : 1 }}
+            className="control control--ghost"
+            style={{ ...UI_FONT, color: showCriteria ? T.accentHover : T.muted, fontSize: 13, padding: "9px 18px", display: "flex", alignItems: "center", gap: 7, width: "100%", opacity: inputDisabled ? 0.5 : 1 }}
           >
             <ChevronDown size={14} style={{ transform: showCriteria ? "rotate(180deg)" : "none", transition: "transform 0.15s" }} aria-hidden="true" />
             Success criteria
@@ -135,14 +136,16 @@ export default function ChatPanel({
             <button
               onClick={onReset}
               disabled={inputDisabled}
-              style={{ ...UI_FONT, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, color: T.text, padding: "8px 12px", fontSize: 13, display: "flex", alignItems: "center", gap: 6, opacity: inputDisabled ? 0.5 : 1 }}
+              className="control control--neutral"
+              style={{ ...UI_FONT, padding: "8px 12px", fontSize: 13, display: "flex", alignItems: "center", gap: 6, opacity: inputDisabled ? 0.5 : 1 }}
             >
               <RotateCcw size={14} aria-hidden="true" /> Reset
             </button>
             <button
               onClick={onSend}
               disabled={sendDisabled}
-              style={{ ...UI_FONT, background: sendDisabled ? T.accentSoft : T.accent, border: `1px solid ${sendDisabled ? T.accentSoft : T.accent}`, borderRadius: 8, color: sendDisabled ? T.muted : T.surface, padding: "8px 16px", fontSize: 13, fontWeight: 600, opacity: sendDisabled ? 0.55 : 1 }}
+              className="control control--primary"
+              style={{ ...UI_FONT, padding: "8px 16px", fontSize: 13, fontWeight: 600 }}
             >
               Send
             </button>

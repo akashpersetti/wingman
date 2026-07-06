@@ -75,3 +75,96 @@ test("renders the graph, splash, evaluator, and palette without terminal artifac
   assert.match(splash, /role="progressbar"/);
   assert.match(palette, /type="search"/);
 });
+
+test("keeps native input focus outlines visible", async () => {
+  const [textarea, palette, css] = await Promise.all([
+    read("components/AppTextarea.tsx"),
+    read("components/CommandPalette.tsx"),
+    read("app/globals.css"),
+  ]);
+
+  assert.doesNotMatch(`${textarea}\n${palette}`, /outline\s*:\s*(?:0|["']none["'])/);
+  assert.match(css, /input:focus-visible,\s*textarea:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--accent\)/s);
+});
+
+test("uses the contrast-safe primary color for small filled actions", async () => {
+  const [chat, modal, css] = await Promise.all([
+    read("components/ChatPanel.tsx"),
+    read("components/LoadSessionModal.tsx"),
+    read("app/globals.css"),
+  ]);
+
+  assert.match(chat, /className="control control--primary"/);
+  assert.match(modal, /className="control control--primary"/);
+  assert.match(css, /--accent-hover:\s*#0f766e/);
+  assert.match(css, /\.control--primary\s*\{[^}]*background:\s*var\(--accent-hover\)/s);
+  assert.match(css, /\.control--primary\s*\{[^}]*color:\s*#ffffff/s);
+});
+
+test("prevents narrow-screen overflow with global sizing and session truncation", async () => {
+  const [header, css] = await Promise.all([
+    read("components/AppHeader.tsx"),
+    read("app/globals.css"),
+  ]);
+
+  assert.match(css, /\*,\s*\*::before,\s*\*::after\s*\{\s*box-sizing:\s*border-box/);
+  assert.match(header, /className="session-pill"/);
+  assert.match(header, /className="session-pill__id"/);
+  assert.match(css, /\.session-pill\s*\{[^}]*max-width:\s*100%[^}]*min-width:\s*0/s);
+  assert.match(css, /\.session-pill__id\s*\{[^}]*overflow:\s*hidden[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s);
+});
+
+test("gives both overlays dialog semantics, selected command state, and managed focus", async () => {
+  const [palette, modal, focusHook] = await Promise.all([
+    read("components/CommandPalette.tsx"),
+    read("components/LoadSessionModal.tsx"),
+    read("lib/useDialogFocus.ts"),
+  ]);
+
+  for (const dialog of [palette, modal]) {
+    assert.match(dialog, /role="dialog"/);
+    assert.match(dialog, /aria-modal="true"/);
+    assert.match(dialog, /useDialogFocus/);
+  }
+  assert.match(palette, /aria-label="Command palette"/);
+  assert.match(palette, /role="listbox"/);
+  assert.match(palette, /role="option"/);
+  assert.match(palette, /aria-selected=\{i === selected\}/);
+  assert.match(palette, /aria-activedescendant=/);
+  assert.match(modal, /aria-labelledby="load-session-title"/);
+  assert.match(focusHook, /event\.key === "Escape"/);
+  assert.match(focusHook, /event\.key !== "Tab"/);
+  assert.match(focusHook, /previouslyFocused/);
+  assert.match(focusHook, /previouslyFocused\.focus\(\)/);
+});
+
+test("defines reusable hover feedback for active controls and command options", async () => {
+  const [header, chat, modal, palette, css] = await Promise.all([
+    read("components/AppHeader.tsx"),
+    read("components/ChatPanel.tsx"),
+    read("components/LoadSessionModal.tsx"),
+    read("components/CommandPalette.tsx"),
+    read("app/globals.css"),
+  ]);
+
+  for (const source of [header, chat, modal]) {
+    assert.match(source, /className=(?:"|\{`)[^"`]*control/);
+  }
+  assert.match(palette, /command-option/);
+  assert.match(css, /\.control--neutral:hover:not\(:disabled\)/);
+  assert.match(css, /\.control--primary:hover:not\(:disabled\)/);
+  assert.match(css, /\.control--ghost:hover:not\(:disabled\)/);
+  assert.match(css, /\.command-option:hover/);
+});
+
+test("removes the unused terminal spinner from shared UI source", async () => {
+  const source = (await Promise.all([
+    read("lib/theme.ts"),
+    read("app/page.tsx"),
+    read("components/AppHeader.tsx"),
+    read("components/ChatPanel.tsx"),
+    read("components/LoadSessionModal.tsx"),
+  ])).join("\n");
+
+  assert.doesNotMatch(source, /\bSPIN\b|⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏/);
+});
