@@ -36,6 +36,7 @@ Create `.gitignore` with exactly:
 ```gitignore
 # Local agent context
 AGENTS.md
+.superpowers/
 
 # macOS
 .DS_Store
@@ -70,12 +71,11 @@ coverage/
 *.swp
 *~
 
-# Terraform local state and generated files
+# Terraform local state and generated files (keep .terraform.lock.hcl trackable)
 .terraform/
 *.tfstate
 *.tfstate.*
 *.tfplan
-.terraform.lock.hcl
 crash.log
 override.tf
 override.tf.json
