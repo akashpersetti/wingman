@@ -60,3 +60,18 @@ test("defines responsive desktop and narrow-screen workspace behavior", async ()
   assert.match(css, /@media\s*\(max-width:\s*900px\)/);
   assert.match(css, /flex-direction:\s*column/);
 });
+
+test("renders the graph, splash, evaluator, and palette without terminal artifacts", async () => {
+  const [graph, splash, agent, palette] = await Promise.all([
+    read("components/GraphDiagram.tsx"),
+    read("components/ui/splash-screen.tsx"),
+    read("components/AgentPanel.tsx"),
+    read("components/CommandPalette.tsx"),
+  ]);
+  const source = `${graph}\n${splash}\n${agent}\n${palette}`;
+
+  assert.doesNotMatch(source, /Menlo|Monaco|Courier|mirrorRef|cursorLeft|caretColor:\s*["']transparent|BOOT_LINES|█|░|┌|┐|└|┘|__start__|__end__|waiting for evaluator output\.\.\./);
+  assert.match(graph, /className="graph-node/);
+  assert.match(splash, /role="progressbar"/);
+  assert.match(palette, /type="search"/);
+});

@@ -23,85 +23,47 @@ export default function GraphDiagram({ isLoading }: Props) {
     return () => clearInterval(id);
   }, [isLoading]);
 
-  /* colour helpers */
-  const ACTIVE = "#4EC9B0"; /* teal  */
-  const IDLE   = "#555555"; /* muted */
-  const DIM    = "#2D2D2D"; /* borders / arrows */
-  const TERM   = "#444444"; /* terminal nodes */
+  function Node({ id, label, detail }: { id: string; label: string; detail?: string }) {
+    const active = activeNode === id;
+    const content = (
+      <>
+        <span>{label}</span>
+        {detail && <small>{detail}</small>}
+      </>
+    );
 
-  function nc(name: string) { return activeNode === name ? ACTIVE : IDLE; }
-  function fw(name: string): "bold" | "normal" { return activeNode === name ? "bold" : "normal"; }
+    if (active) {
+      return (
+        <div className="graph-node graph-node--active" aria-current="step">
+          {content}
+        </div>
+      );
+    }
 
-  const s = (color: string, text: string, bold?: boolean) => (
-    <span style={{ color, fontWeight: bold ? "bold" : "normal" }}>{text}</span>
-  );
+    return (
+      <div className="graph-node">
+        {content}
+      </div>
+    );
+  }
 
   return (
-    <div style={{
-      fontFamily: "Menlo, Monaco, 'Courier New', monospace",
-      fontSize: "12px", lineHeight: "1.45",
-      userSelect: "none", whiteSpace: "pre", overflowX: "auto",
-    }}>
-      <div>
-        {s(TERM,       "  ┌───────────┐")}
-        {s(DIM,        "     ")}
-        {s(nc("worker"), "┌──────────┐")}
-        {s(DIM,        "     ")}
-        {s(nc("tools"),  "┌─────────┐")}
+    <div className="agent-graph" aria-label="Agent workflow">
+      <div className="graph-row">
+        <Node id="start" label="Start" />
+        <span className="graph-arrow">→</span>
+        <Node id="worker" label="Worker" />
+        <span className="graph-arrow">↔</span>
+        <Node id="tools" label="Tools" />
       </div>
-      <div>
-        {s(TERM,       "  │ ")}
-        {s(TERM,       "__start__")}
-        {s(TERM,       " │")}
-        {s(DIM,        "────▶")}
-        {s(nc("worker"), "│  ")}
-        {s(nc("worker"), "worker", fw("worker") === "bold")}
-        {s(nc("worker"), "  │")}
-        {s(DIM,        "◀───▶")}
-        {s(nc("tools"),  "│  ")}
-        {s(nc("tools"),  "tools", fw("tools") === "bold")}
-        {s(nc("tools"),  "  │")}
+      <span className="graph-arrow graph-arrow--down">↓</span>
+      <div className="graph-row"><Node id="evaluator" label="Evaluator" /></div>
+      <span className="graph-arrow graph-arrow--down">↓</span>
+      <div className="graph-row">
+        <Node id="worker" label="Worker" detail="Retry" />
+        <span className="graph-arrow">or</span>
+        <Node id="end" label="End" />
       </div>
-      <div>
-        {s(TERM,       "  └───────────┘")}
-        {s(DIM,        "     ")}
-        {s(nc("worker"), "└──────────┘")}
-        {s(DIM,        "     ")}
-        {s(nc("tools"),  "└─────────┘")}
-      </div>
-
-      <div>{s(DIM, "                         │")}</div>
-      <div>{s(DIM, "                         ▼")}</div>
-
-      <div>{s(nc("evaluator"), "                   ┌───────────┐")}</div>
-      <div>
-        {s(nc("evaluator"), "                   │ ")}
-        {s(nc("evaluator"), "evaluator", fw("evaluator") === "bold")}
-        {s(nc("evaluator"), " │")}
-      </div>
-      <div>{s(nc("evaluator"), "                   └───────────┘")}</div>
-
-      <div>{s(DIM, "                      ╱         ╲")}</div>
-      <div>{s(DIM, "                    ▼              ▼")}</div>
-
-      <div>
-        {s(nc("worker"), "              ┌──────────┐")}
-        {s(DIM,          "    ")}
-        {s(TERM,         "┌─────────┐")}
-      </div>
-      <div>
-        {s(nc("worker"), "              │  ")}
-        {s(nc("worker"), "worker")}
-        {s(nc("worker"), "  │")}
-        {s(DIM,          "    ")}
-        {s(TERM,         "│ __end__ │")}
-      </div>
-      <div>
-        {s(nc("worker"), "              │ (retry)  │")}
-        {s(DIM,          "    ")}
-        {s(TERM,         "└─────────┘")}
-      </div>
-      <div>{s(nc("worker"), "              └──────────┘")}</div>
     </div>
   );
 }

@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+import { T, UI_FONT } from "@/lib/theme";
 
 export interface Command {
-  id:       string;
-  label:    string;
-  hint?:    string;
+  id:        string;
+  label:     string;
+  hint?:     string;
   shortcut?: string;
-  action:   () => void;
+  action:    () => void;
 }
 
 interface Props {
@@ -16,14 +17,10 @@ interface Props {
 }
 
 export default function CommandPalette({ commands, onClose }: Props) {
-  const [query,      setQuery]      = useState("");
-  const [selected,   setSelected]   = useState(0);
-  const [cursorLeft, setCursorLeft] = useState<number | null>(null);
-  const [inputFocused, setInputFocused] = useState(false);
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const mirrorRef  = useRef<HTMLSpanElement>(null);
-  const listRef    = useRef<HTMLDivElement>(null);
-  const itemRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const filtered = commands.filter(c =>
     c.label.toLowerCase().includes(query.toLowerCase()) ||
@@ -46,101 +43,52 @@ export default function CommandPalette({ commands, onClose }: Props) {
     return () => window.removeEventListener("keydown", onGlobalKey, { capture: true });
   }, [onClose]);
 
-  function updateCursor() {
-    const el     = inputRef.current;
-    const mirror = mirrorRef.current;
-    if (!el || !mirror) return;
-    const sel      = el.selectionStart ?? query.length;
-    mirror.textContent = query.slice(0, sel);
-    const mRect  = mirror.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    setCursorLeft(mRect.right - elRect.left);
-  }
-
-  /* Reset selection when filter changes */
   useEffect(() => { setSelected(0); }, [query]);
 
-  /* Scroll selected item into view */
   useEffect(() => {
     itemRefs.current[selected]?.scrollIntoView({ block: "nearest" });
   }, [selected]);
 
   function handleKey(e: React.KeyboardEvent) {
-    if (e.key === "ArrowDown")  { e.preventDefault(); setSelected(s => Math.min(s + 1, filtered.length - 1)); }
-    if (e.key === "ArrowUp")    { e.preventDefault(); setSelected(s => Math.max(s - 1, 0)); }
-    if (e.key === "Enter")      { e.preventDefault(); filtered[selected]?.action(); onClose(); }
-    if (e.key === "Escape")     { e.preventDefault(); e.stopPropagation(); onClose(); }
+    if (e.key === "ArrowDown") { e.preventDefault(); setSelected(s => Math.min(s + 1, filtered.length - 1)); }
+    if (e.key === "ArrowUp") { e.preventDefault(); setSelected(s => Math.max(s - 1, 0)); }
+    if (e.key === "Enter") { e.preventDefault(); filtered[selected]?.action(); onClose(); }
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); onClose(); }
   }
-
-  const T = {
-    bg:      "#1E1E1E",
-    border:  "#3C3C3C",
-    input:   "#252525",
-    text:    "#E8E8E8",
-    muted:   "#666666",
-    active:  "#2A3F5C",
-    blue:    "#5B9BD5",
-    teal:    "#4EC9B0",
-  };
 
   return (
     <>
-      {/* Backdrop */}
       <div className="cmd-backdrop" onClick={onClose} />
 
-      {/* Palette */}
       <div style={{
+        ...UI_FONT,
         position: "fixed", top: "20%", left: "50%", transform: "translateX(-50%)",
-        zIndex: 61, width: 520,
-        background: T.bg, border: `1px solid ${T.border}`,
-        fontFamily: "'Menlo','Monaco','Courier New',monospace",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
+        zIndex: 61, width: "min(520px, calc(100vw - 32px))", overflow: "hidden",
+        background: T.surface, border: `1px solid ${T.border}`, borderRadius: 12,
+        boxShadow: "0 24px 64px rgba(15, 23, 42, 0.2)",
       }}>
-        {/* Header */}
-        <div style={{ padding: "10px 14px", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ color: T.blue, fontSize: "12px" }}>❯</span>
-          {/* Block-cursor input */}
-          <div style={{ flex: 1, position: "relative" }}>
-            {/* Hidden mirror for cursor measurement */}
-            <span ref={mirrorRef} aria-hidden style={{
-              position: "absolute", visibility: "hidden", whiteSpace: "pre",
-              fontFamily: "inherit", fontSize: "13px", pointerEvents: "none",
-            }} />
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={e => { setQuery(e.target.value); updateCursor(); }}
-              onKeyDown={e => { handleKey(e); updateCursor(); }}
-              onKeyUp={updateCursor}
-              onClick={updateCursor}
-              onSelect={updateCursor}
-              onFocus={() => { setInputFocused(true); updateCursor(); }}
-              onBlur={() => setInputFocused(false)}
-              placeholder={inputFocused ? "" : "search commands..."}
-              style={{
-                width: "100%", background: "transparent", border: "none", outline: "none",
-                color: T.text, fontSize: "13px", caretColor: "transparent",
-                fontFamily: "inherit",
-              }}
-            />
-            {/* Block cursor */}
-            {inputFocused && cursorLeft !== null && (
-              <div style={{
-                position: "absolute", top: "50%", transform: "translateY(-50%)",
-                left: cursorLeft, width: 8, height: "1.1em",
-                background: T.text, opacity: 0.85, pointerEvents: "none",
-                mixBlendMode: "difference",
-              }} />
-            )}
-          </div>
-          <span style={{ color: T.muted, fontSize: "10px" }}>esc to close</span>
+        <div style={{ padding: "12px 14px", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", gap: 12 }}>
+          <input
+            ref={inputRef}
+            type="search"
+            aria-label="Search commands"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={handleKey}
+            placeholder="Search commands…"
+            style={{
+              flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none",
+              color: T.text, fontSize: "13px", caretColor: T.accent,
+              fontFamily: "inherit",
+            }}
+          />
+          <span style={{ color: T.muted, fontSize: "10px", whiteSpace: "nowrap" }}>Esc to close</span>
         </div>
 
-        {/* Results */}
-        <div ref={listRef} style={{ maxHeight: 320, overflowY: "auto" }}>
+        <div style={{ maxHeight: 320, overflowY: "auto", padding: 6 }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: "12px 16px", color: T.muted, fontSize: "12px" }}>
-              no commands match
+            <div style={{ padding: "12px 10px", color: T.muted, fontSize: "12px" }}>
+              No commands match
             </div>
           ) : (
             filtered.map((cmd, i) => (
@@ -150,26 +98,25 @@ export default function CommandPalette({ commands, onClose }: Props) {
                 onMouseEnter={() => setSelected(i)}
                 onClick={() => { cmd.action(); onClose(); }}
                 style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "9px 16px",
-                  background: i === selected ? T.active : "transparent",
-                  borderLeft: i === selected ? `2px solid ${T.blue}` : "2px solid transparent",
-                  transition: "background 0.08s",
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+                  padding: "9px 10px",
+                  background: i === selected ? T.accentWash : "transparent",
+                  border: `1px solid ${i === selected ? T.accent : "transparent"}`,
+                  borderRadius: 8,
+                  transition: "background 0.08s, border-color 0.08s",
+                  cursor: "pointer",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ color: i === selected ? T.blue : T.muted, fontSize: "11px" }}>
-                    {i === selected ? "▸" : " "}
-                  </span>
-                  <span style={{ color: T.text, fontSize: "13px" }}>{cmd.label}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                  <span style={{ color: T.text, fontSize: "13px", fontWeight: i === selected ? 600 : 400 }}>{cmd.label}</span>
                   {cmd.hint && (
-                    <span style={{ color: T.muted, fontSize: "11px" }}>{cmd.hint}</span>
+                    <span style={{ color: T.muted, fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cmd.hint}</span>
                   )}
                 </div>
                 {cmd.shortcut && (
                   <span style={{
-                    color: T.muted, fontSize: "10px",
-                    border: `1px solid #3C3C3C`, padding: "1px 5px",
+                    color: T.muted, fontSize: "10px", flexShrink: 0,
+                    border: `1px solid ${T.border}`, borderRadius: 5, padding: "2px 6px",
                   }}>
                     {cmd.shortcut}
                   </span>
@@ -179,11 +126,10 @@ export default function CommandPalette({ commands, onClose }: Props) {
           )}
         </div>
 
-        {/* Footer hint */}
-        <div style={{ padding: "7px 16px", borderTop: `1px solid ${T.border}`, display: "flex", gap: 16 }}>
-          {[["↑↓", "navigate"], ["↵", "run"], ["esc", "close"]].map(([key, desc]) => (
+        <div style={{ padding: "8px 16px", borderTop: `1px solid ${T.border}`, display: "flex", flexWrap: "wrap", gap: 16 }}>
+          {[["↑↓", "Navigate"], ["Enter", "Run"], ["Esc", "Close"]].map(([key, desc]) => (
             <span key={key} style={{ color: T.muted, fontSize: "10px" }}>
-              <span style={{ border: `1px solid #3C3C3C`, padding: "0px 4px", marginRight: 4 }}>{key}</span>
+              <span style={{ border: `1px solid ${T.border}`, borderRadius: 4, padding: "1px 5px", marginRight: 5 }}>{key}</span>
               {desc}
             </span>
           ))}

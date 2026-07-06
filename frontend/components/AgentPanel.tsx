@@ -13,33 +13,30 @@ interface Props {
 
 export default function AgentPanel({ isLoading, evalMessages, evalEndRef }: Props) {
   return (
-    <div style={{ width: "50%", display: "flex", flexDirection: "column", borderRight: `1px solid ${T.border}` }}>
-
-      {/* ── Graph ───────────────────────────────── */}
+    <div className="agent-panel">
       <div style={{
         height: "50%", borderBottom: `1px solid ${T.border}`,
         background: T.panel, padding: "14px 18px",
         overflow: "hidden", display: "flex", flexDirection: "column",
       }}>
-        <div style={{ color: T.dim, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 12, flexShrink: 0 }}>
-          agent graph
+        <div style={{ color: T.muted, fontSize: "11px", fontWeight: 600, marginBottom: 12, flexShrink: 0 }}>
+          Agent workflow
         </div>
-        <div style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "center" }}>
+        <div style={{ flex: 1, minHeight: 0, overflow: "auto", display: "flex", alignItems: "center" }}>
           <GraphDiagram isLoading={isLoading} />
         </div>
       </div>
 
-      {/* ── Evaluator ───────────────────────────── */}
       <div style={{ height: "50%", background: T.panel, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        <div style={{ padding: "9px 18px 7px", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
-          <span style={{ color: T.yellow, fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-            evaluator
+        <div style={{ padding: "10px 18px", borderBottom: `1px solid ${T.border}`, flexShrink: 0 }}>
+          <span style={{ color: T.text, fontSize: "11px", fontWeight: 600 }}>
+            Evaluator
           </span>
         </div>
         <div style={{ flex: 1, overflowY: "auto", padding: "12px 18px" }}>
           {evalMessages.length === 0 ? (
-            <div style={{ color: T.dim, fontSize: "12px" }}>
-              &gt; waiting for evaluator output...
+            <div style={{ color: T.muted, fontSize: "12px", lineHeight: 1.6 }}>
+              Evaluator feedback will appear here after a response.
             </div>
           ) : (
             evalMessages.map((msg, i) => {
@@ -50,13 +47,21 @@ export default function AgentPanel({ isLoading, evalMessages, evalEndRef }: Prop
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.15 }}
-                  style={{ marginBottom: 16 }}
+                  style={{
+                    marginBottom: 12,
+                    padding: "12px 14px",
+                    background: T.surface,
+                    border: `1px solid ${T.border}`,
+                    borderLeft: `3px solid ${T.accent}`,
+                    borderRadius: 10,
+                    color: T.text,
+                  }}
                 >
-                  <div style={{ display: "flex", gap: 8, marginBottom: 4 }}>
-                    <span style={{ color: T.dim, fontSize: "11px" }}>turn {i + 1}</span>
-                    {msg.timestamp && <span style={{ color: T.dim, fontSize: "11px" }}>{msg.timestamp}</span>}
+                  <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+                    <span style={{ color: T.muted, fontSize: "11px", fontWeight: 600 }}>Turn {i + 1}</span>
+                    {msg.timestamp && <span style={{ color: T.muted, fontSize: "11px" }}>{msg.timestamp}</span>}
                   </div>
-                  <div style={{ color: T.yellow, fontSize: "12px", lineHeight: 1.6, paddingLeft: 10, borderLeft: "1px solid #333300" }}>
+                  <div style={{ color: T.text, fontSize: "12px", lineHeight: 1.6 }}>
                     {feedback}
                   </div>
                 </motion.div>
