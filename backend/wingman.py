@@ -103,6 +103,7 @@ Please continue the assignment, ensuring that you meet the success criteria or h
 
     def evaluator(self, state: State) -> Dict[str, Any]:
         last_response = state["messages"][-1].content
+        word_count = len(last_response.split())
 
         conversation = "Conversation history:\n\n"
         for m in state["messages"]:
@@ -120,6 +121,8 @@ Success criteria:
 
 Assistant's last response:
 {last_response}
+
+(Word count of the assistant's last response, computed programmatically: {word_count}. Trust this number over your own count if the criteria involves a word count.)
 
 Decide if the success criteria is met.
 
